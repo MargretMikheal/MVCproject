@@ -1,0 +1,60 @@
+﻿@model Order
+
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center">Order Details (Order #@Model.OrderId)</h2>
+    <p><strong>Order Date:</strong> @Model.OrderDate.ToString("MMMM dd, yyyy")</p>
+
+    <table class="table table-bordered table-hover mt-4">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Product</th>
+                <th scope="col">Name</th>
+                <th scope="col">Price</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.OrderItems)
+            {
+                <tr>
+                    <!-- Product Image -->
+                    <td>
+                        @if (item.Product.Photo != null && item.Product.Photo.Length > 0)
+                        {
+                            <img src="data:image/jpeg;base64,@Convert.ToBase64String(item.Product.Photo)"
+                                 class="img-thumbnail" alt="@item.Product.Name"
+                                 style="width: 75px; height: 75px; object-fit: cover;" />
+                        }
+                        else
+                        {
+                            <img src="~/assets/img/products/default.jpg"
+                                 class="img-thumbnail" alt="Default Image"
+                                 style="width: 75px; height: 75px; object-fit: cover;" />
+                        }
+                    </td>
+
+                    <!-- Product Name -->
+                    <td>@item.Product.Name</td>
+
+                    <!-- Price -->
+                    <td>@item.Product.Price.ToString("C")</td>
+
+                    <!-- Quantity -->
+                    <td>@item.Quantity</td>
+
+                    <!-- Total Price for this item -->
+                    <td>@(item.Quantity * item.Product.Price).ToString("C")</td>
+                </tr>
+            }
+            @* <tr class="table-active">
+                <td colspan="4" class="text-right"><strong>Total Amount:</strong></td>
+                <td><strong>@Model.TotalAmount.ToString("C")</strong></td>
+            </tr> *@
+        </tbody>
+    </table>
+</div>

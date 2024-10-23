@@ -1,0 +1,65 @@
+﻿ @model Product
+@{
+    ViewData["Title"] = "EditProduct";
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+}
+
+<h1>EditProduct</h1>
+<form asp-action="EditProduct" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Price"></label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="StockQuantity"></label>
+        <input asp-for="StockQuantity" class="form-control" />
+        <span asp-validation-for="StockQuantity" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Current Photo:</label><br />
+        @if (Model.Photo != null && Model.Photo.Length > 0)
+        {
+            <img src="data:image/jpeg;base64,@Convert.ToBase64String(Model.Photo)" alt="Current Photo" style="width: 100px; height: 100px;" />
+        }
+        else
+        {
+            <p>No photo available</p>
+        }
+    </div>
+
+    <div class="custom-file mt-2">
+        <input type="file" name="uploadedPhoto" class="form-control" />
+        <label class="custom-file-label" asp-for="Photo">Choose Picture</label>
+        <span asp-validation-for="Photo" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CategoryId"></label>
+        <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories"></select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
