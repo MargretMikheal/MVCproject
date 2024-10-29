@@ -92,7 +92,7 @@ namespace MVCproject.Controllers
 
         [HttpPost]
         public async Task<IActionResult> RemoveFromCart(int cartItemId)
-        {
+        { 
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return RedirectToAction("Login", "Account");
 
@@ -108,7 +108,25 @@ namespace MVCproject.Controllers
 
             return RedirectToAction("Index");
         }
+        [HttpDelete]
+        public async Task<IActionResult> RemoveItem(int cartItemId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return BadRequest("User not found. Please login.");
 
+            var cart = await _CartRepository.GetCartByUserIdAsync(user.Id);
+            if (cart == null) return NotFound("Cart not found.");
+
+            var cartItem = cart.CartItems.FirstOrDefault(x => x.CartItemId == cartItemId);
+            if (cartItem != null)
+            {
+                cart.CartItems.Remove(cartItem);
+                await _CartRepository.UpdateCartAsync(cart);
+                return Ok("Item removed successfully.");
+            }
+
+            return NotFound("Item not found in cart.");
+        }
 
     }
 }

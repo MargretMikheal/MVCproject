@@ -11,121 +11,136 @@
     <!-- Check if Cart has items -->
     @if (Model == null || Model.CartItems == null || !Model.CartItems.Any())
     {
-            <div class="alert alert-info text-center mt-4">
-                Your cart is empty.
-            </div>
+        <div class="alert alert-info text-center mt-4">
+            Your cart is empty.
+        </div>
     }
     else
     {
-            <form asp-action="ConfirmOrder" asp-controller="Order" method="post">
-                <table class="table table-bordered table-hover mt-4">
-                    <thead class="thead-light">
-                        <tr>
-                            <th scope="col">Select</th>
-                            <th scope="col">Product</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Price</th>
-                            <th scope="col">Quantity</th>
-                            <th scope="col">Total</th>
-                            <th scope="col">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+        <form asp-action="ConfirmOrder" asp-controller="Order" method="post">
+            <table class="table table-bordered table-hover mt-4">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col">Select</th>
+                        <th scope="col">Product</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Total</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
                     @foreach (var item in Model.CartItems)
                     {
-                                <tr>
-                                    <!-- Checkbox to select product -->
-                                    <td>
-                                        <input type="checkbox" name="selectedItems" value="@item.ProductId" />
-                                    </td>
-
-                                    <!-- Product Image -->
-                                    <td>
+                        <tr class="cart-item" data-id="@item.CartItemId">
+                            <td><input type="checkbox" name="selectedItems" value="@item.ProductId" /></td>
+                            <td>
                                 @if (item.Product.Photo != null && item.Product.Photo.Length > 0)
                                 {
-                                                <img src="data:image/jpeg;base64,@Convert.ToBase64String(item.Product.Photo)"
-                                                     class="img-thumbnail" alt="@item.Product.Name"
-                                                     style="width: 75px; height: 75px; object-fit: cover;" />
+                                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(item.Product.Photo)"
+                                         class="img-thumbnail" alt="@item.Product.Name"
+                                         style="width: 75px; height: 75px; object-fit: cover;" />
                                 }
                                 else
                                 {
-                                                <img src="~/assets/img/products/default.jpg"
-                                                     class="img-thumbnail" alt="Default Image"
-                                                     style="width: 75px; height: 75px; object-fit: cover;" />
+                                    <img src="~/assets/img/products/default.jpg"
+                                         class="img-thumbnail" alt="Default Image"
+                                         style="width: 75px; height: 75px; object-fit: cover;" />
                                 }
-                                    </td>
-
-                                    <!-- Product Name -->
-                                    <td>@item.Product.Name</td>
-
-                                    <!-- Price -->
-                                    <td>@item.Product.Price.ToString("C")</td>
-
-                                    <!-- Quantity input -->
-                                    <td>
-                                        <input type="number" name="quantities[@item.ProductId]" value="@item.Quantity" min="1"
-                                               class="form-control quantity-input" data-price="@item.Product.Price"
-                                               data-total-id="total-@item.ProductId" />
-                                    </td>
-
-                                    <!-- Total Price for this item -->
-                                    <td>
-                                        <span id="total-@item.ProductId">@((item.Quantity * item.Product.Price).ToString("C"))</span>
-                                    </td>
-
-                                    <!-- Remove from Cart Action -->
-                                    <td>
-                                        <form asp-action="RemoveFromCart" asp-controller="Cart" method="post">
-                                            <input type="hidden" name="cartItemId" value="@item.CartItemId" />
-                                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                    }
-
-                        <tr class="table-active">
-                            <td colspan="5" class="text-right"><strong>Total Amount:</strong></td>
-                            <td colspan="2"><strong><span id="grandTotal">@Model.CartItems.Sum(x => x.Quantity * x.Product.Price).ToString("C")</span></strong></td>
+                            </td>
+                            <td>@item.Product.Name</td>
+                            <td>@item.Product.Price.ToString("C")</td>
+                            <td>
+                                <input type="number" name="quantities[@item.ProductId]" value="@item.Quantity" min="1"
+                                       class="form-control quantity-input" data-price="@item.Product.Price"
+                                       data-total-id="total-@item.ProductId" />
+                            </td>
+                            <td><span id="total-@item.ProductId">@((item.Quantity * item.Product.Price).ToString("C"))</span></td>
+                            <td>
+                                <a href="#" class="btn btn-danger rounded rounded-3 js-delete" data-id="@item.CartItemId">Remove</a>
+                            </td>
                         </tr>
-                    </tbody>
-                </table>
-
-                <!-- Confirm Order Button -->
-                <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-success">Confirm Order</button>
-                </div>
-            </form>
+                    }
+                    <tr class="table-active">
+                        <td colspan="5" class="text-right"><strong>Total Amount:</strong></td>
+                        <td colspan="2"><strong><span id="grandTotal">@Model.CartItems.Sum(x => x.Quantity * x.Product.Price).ToString("C")</span></strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success">Confirm Order</button>
+            </div>
+        </form>
     }
 </div>
 
-<script>
-    // Function to update totals based on quantity changes
-    function updateTotals() {
-        let grandTotal = 0;
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Function to update totals
+            function updateTotals() {
+                let grandTotal = 0;
 
-        // Loop through each quantity input field
-        document.querySelectorAll('.quantity-input').forEach(function(input) {
-            const price = parseFloat(input.getAttribute('data-price'));
-            const quantity = parseInt(input.value) || 0;
-            const totalId = input.getAttribute('data-total-id');
+                // Loop through each quantity input field
+                document.querySelectorAll('.quantity-input').forEach(function (input) {
+                    const price = parseFloat(input.getAttribute('data-price'));
+                    const quantity = parseInt(input.value) || 0;
+                    const totalId = input.getAttribute('data-total-id');
 
-            // Update the total for this item
-            const itemTotal = price * quantity;
-            document.getElementById(totalId).innerText = itemTotal.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+                    // Update the total for this item
+                    const itemTotal = price * quantity;
+                    document.getElementById(totalId).innerText = itemTotal.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 
-            // Add to grand total
-            grandTotal += itemTotal;
+                    // Add to grand total
+                    grandTotal += itemTotal;
+                });
+
+                // Update the grand total
+                document.getElementById('grandTotal').innerText = grandTotal.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+            }
+
+            // Delete item from cart using AJAX
+            $('.js-delete').on('click', function (e) {
+                e.preventDefault();
+                var btn = $(this);
+                var itemId = btn.data('id');
+
+                // Confirmation dialog
+                if (confirm("Are you sure you want to remove this item from your cart?")) {
+                    $.ajax({
+                        url: '/Cart/RemoveItem', // Update URL as per your routing
+                        type: 'DELETE',
+                        data: { cartItemId: itemId },
+                        success: function (response) {
+                            alert(response); // Show success message
+
+                            // Remove the item from the DOM
+                            btn.closest('.cart-item').remove();
+
+                            // Recalculate totals after removing the item
+                            updateTotals();
+
+                            // Check if there are any items left in the cart
+                            if ($('.cart-item').length === 0) {
+                                $('.table').replaceWith('<div class="alert alert-info text-center mt-4">Your cart is empty.</div>');
+                            }
+                        },
+                        error: function (xhr) {
+                            alert("Error removing item: " + xhr.responseText);
+                        }
+                    });
+                }
+            });
+
+            // Quantity change event to update totals dynamically
+            document.querySelectorAll('.quantity-input').forEach(function (input) {
+                input.addEventListener('input', updateTotals);
+            });
+
+            // Initial call to set totals on page load
+            updateTotals();
         });
-
-        // Update the grand total
-        document.getElementById('grandTotal').innerText = grandTotal.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-    }
-
-    // Add event listeners to all quantity inputs to trigger the update on change
-    document.querySelectorAll('.quantity-input').forEach(function(input) {
-        input.addEventListener('input', updateTotals);
-    });
-
-    // Initial call to set totals on page load
-    updateTotals();
-</script>
+    </script>
+}
