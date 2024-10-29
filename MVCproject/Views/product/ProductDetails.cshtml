@@ -1,47 +1,51 @@
 ﻿@{
-    ViewData["Title"] = "ProductDetails";
-    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+    ViewData["Title"] = "Product Details";
+    Layout = "~/Views/Shared/_detailsLayout.cshtml";
 }
 
-<h1>ProductDetails</h1>
-
-@model Product
-
-<div class="container">
-    <h1>@Model.Name</h1>
-    <div class="row">
-        <div class="col-md-6">
-            @if (Model.Photo != null && Model.Photo.Length > 0)
-            {
-                <img src="data:image/jpeg;base64,@Convert.ToBase64String(Model.Photo)" class="img-fluid" alt="@Model.Name" style="width: 50px; height: 50px;" />
-            }
-            else
-            {
-                <img src="~/assets/img/products/default.jpg" class="img-fluid" alt="Default Image" style="width: 100px; height: 100px;" />
-            }
-        </div>
-        <div class="col-md-6">
-            <h4>Description</h4>
-            <p>@Model.Description</p>
-
-            <h4>Price</h4>
-            <p>@Model.Price.ToString("C")</p>
-
-            <h4>Stock Quantity</h4>
-            <p>@Model.StockQuantity</p>
-
-            <h4>Category</h4>
-            <p>@Model.Category?.Name</p>
-
-            <!-- Add to Cart Form -->
-            <form asp-action="AddToCart" asp-controller="Cart" method="post">
-                <input type="hidden" name="productId" value="@Model.Id" />
-                <div class="form-group">
-                    <label for="quantity">Quantity</label>
-                    <input type="number" id="quantity" name="quantity" min="1" max="@Model.StockQuantity" class="form-control" value="1" />
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="row g-0">
+            <!-- Product Image Section -->
+            <div class="col-md-5">
+                <div class="p-4">
+                    @if (Model.Photo != null && Model.Photo.Length > 0)
+                    {
+                        <img src="data:image/jpeg;base64,@Convert.ToBase64String(Model.Photo)" class="img-fluid rounded" alt="@Model.Name" />
+                    }
+                    else
+                    {
+                        <img src="~/assets/img/products/default.jpg" class="img-fluid rounded" alt="Default Image" />
+                    }
                 </div>
-                <button type="submit" class="btn btn-primary">Add to Cart</button>
-            </form>
+            </div>
+
+            <!-- Product Info Section -->
+            <div class="col-md-7">
+                <div class="card-body">
+                    <h2 class="card-title">@Model.Name</h2>
+                    <p class="text-muted mb-3">@Model.Category?.Name</p>
+                    <h4 class="text-primary">@Model.Price.ToString("C")</h4>
+
+                    <hr />
+
+                    <h5>Description</h5>
+                    <p>@Model.Description</p>
+
+                    <h5>Stock Quantity</h5>
+                    <p>@Model.StockQuantity</p>
+
+                    <!-- Add to Cart Form -->
+                    <form asp-action="AddToCart" asp-controller="Cart" method="post" class="mt-4">
+                        <input type="hidden" name="productId" value="@Model.Id" />
+                        <div class="form-group">
+                            <label for="quantity">Quantity</label>
+                            <input type="number" id="quantity" name="quantity" min="1" max="@Model.StockQuantity" class="form-control" value="1" />
+                        </div>
+                        <button type="submit" class="btn btn-success mt-3">Add to Cart</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>

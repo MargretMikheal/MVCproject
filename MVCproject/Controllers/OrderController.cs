@@ -84,7 +84,14 @@ namespace YourProjectName.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var orders = await _orderRepository.GetOrdersByUserIdAsync(userId);
 
-            return View(orders); // Assuming you have an OrderHistory view
+            if (orders == null || !orders.Any())
+            {
+                ViewBag.Message = "You have no order history.";
+                return View("OrderHistory", null); // Pass null to the view if there are no orders
+            }
+
+            return View("OrderHistory", orders);
         }
+
     }
 }

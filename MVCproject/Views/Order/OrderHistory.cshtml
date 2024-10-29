@@ -1,15 +1,11 @@
-﻿
+﻿@model IEnumerable<MVCproject.Models.Order>
 @{
-    ViewData["Title"] = "OrderHistory";
-    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+    ViewData["Title"] = "Order History";
+    Layout = "~/Views/Shared/_detailsLayout.cshtml";
 }
 
-<h1>OrderHistory</h1>
-
-@model IEnumerable<Order>
-
-<div class="container mt-4">
-    <h2 class="text-center">Order History</h2>
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Order History</h2>
 
     @if (Model == null || !Model.Any())
     {
@@ -19,28 +15,29 @@
     }
     else
     {
-        <table class="table table-bordered table-hover mt-4">
-            <thead class="thead-light">
-                <tr>
-                    <th scope="col">Order ID</th>
-                    <th scope="col">Order Date</th>
-                    <th scope="col">Total Amount</th>
-                    <th scope="col">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var order in Model)
-                {
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover shadow-sm">
+                <thead class="table-primary">
                     <tr>
-                        <td>@order.OrderId</td>
-                        <td>@order.OrderDate.ToString("MMMM dd, yyyy")</td>
-                        @* <td>@order.TotalAmount.ToString("C")</td> *@
-                        <td>
-                            <a asp-action="OrderDetails" asp-route-id="@order.OrderId" class="btn btn-info btn-sm">View Details</a>
-                        </td>
+                        <th scope="col">Order ID</th>
+                        <th scope="col">Order Date</th>
+                        <th scope="col">Total Amount</th>
+                        <th scope="col">Actions</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        <tr>
+                            <td>@order.OrderId</td>
+                            <td>@order.OrderDate.ToString("MMMM dd, yyyy")</td>
+                            <td>
+                                <a asp-action="OrderDetails" asp-route-id="@order.OrderId" class="btn btn-outline-info btn-sm">View Details</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     }
 </div>
